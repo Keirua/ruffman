@@ -21,8 +21,8 @@ impl BitUnpacker {
     // todo: should deal with the fact that this can overflow
     fn read_bits(&mut self, n: i32) -> Vec<u8> {
         let mut reads: Vec<u8> = Vec::new();
-        for i in 0..n {
-            let curr_value = self.packed_bytes[self.current_byte] & (1 << self.current_offset) != 0;
+        for _ in 0..n {
+            let curr_value = (self.packed_bytes[self.current_byte] & (1 << self.current_offset)) != 0;
             self.current_offset += 1;
             if self.current_offset > 7 {
                 self.current_byte += 1;
@@ -34,11 +34,30 @@ impl BitUnpacker {
         reads
     }
 
+    // todo: should deal with the fact that this can overflow
+    fn peek(&self, n: i32) -> Vec<u8> {
+        let mut reads: Vec<u8> = Vec::new();
+        let mut current_byte = self.current_byte;
+        let mut current_offset = self.current_offset;
+
+        for _ in 0..n {
+            let curr_value = (self.packed_bytes[current_byte] & (1 << current_offset)) != 0;
+            current_offset += 1;
+            if current_offset > 7 {
+                current_byte += 1;
+                current_offset = 0;
+            }
+            reads.push(curr_value as u8);
+        }
+
+        reads
+    }
+
     fn read_i32(&mut self) -> i32 {
-        let bits = self.read_bits(32);
-        let mut result = 0;
+        let bits = self.read_bits(31);
+        let mut result:i32 = 0;
         for (i, v) in bits.iter().enumerate() {
-            result |= v << i;
+            result |= (*v as i32) << i;
         }
 
         result as i32
@@ -48,7 +67,7 @@ impl BitUnpacker {
         let bits = self.read_bits(8);
         let mut result = 0;
         for (i, v) in bits.iter().enumerate() {
-            result |= v << i;
+            result |= (*v as i8) << i;
         }
 
         result as i8
@@ -82,14 +101,18 @@ fn decompress(compressed: Vec<u8>) {
     let mut unpacker = BitUnpacker::new(compressed);
     let table_size = unpacker.read_i8();
     let mut map: HashMap<char, Vec<u8>> = HashMap::new();
-    for i in 0..table_size {
+    for _ in 0..table_size {
         let curr_char = unpacker.read_i8() as u8;
         let encoding_len = unpacker.read_i8();
         let encoded_values = unpacker.read_bits(encoding_len as i32);
         map.insert(curr_char as char, encoded_values);
     }
 
+    let message_length = unpacker.read_i32();
+
+
     println!("{:?}", map);
+    println!("{}", message_length);
 }
 
 fn main() {
@@ -113,9 +136,15 @@ fn main() {
 
     decompress(compressed);
 
-    // let some_bits = unpacker.read_bits(3);
+    // let mut unpacker = BitUnpacker::new(compressed);
+    // let some_bits = unpacker.read_bits(32);
     // let some_other_bits = unpacker.read_bits(8);
     // println!("{:?}", some_bits);
+    // let mut result:i32 = 0;
+    // for (i, v) in some_bits.iter().enumerate() {
+    //     result |= ((*v as i32) << (i));
+    //     println!("{},{},{}", result, v, i);
+    // }
     // println!("{:?}", some_other_bits);
 
 
