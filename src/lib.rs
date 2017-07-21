@@ -47,14 +47,14 @@ impl BitPacker {
 }
 
 #[derive(Debug)]
-pub enum NodeType {
+enum NodeType {
     Node,
     Leaf
 }
 
 #[derive(Debug)]
 pub struct HuffmanNode<'a> {
-    pub node_type: NodeType,
+    node_type: NodeType,
     pub key: char,
     pub value: i32,
     pub left: Option<&'a HuffmanNode<'a>>,
@@ -62,7 +62,7 @@ pub struct HuffmanNode<'a> {
 }
 
 impl<'a> HuffmanNode<'a> {
-    // no == implemented on NodeType, hence the weird if
+    // no == operator is implemented on NodeType, hence the weird if
     pub fn is_leaf(&self) -> bool { if let NodeType::Leaf = self.node_type { true } else { false} }
 
     pub fn new_leaf(key: char, value: i32) -> HuffmanNode<'a> {
@@ -86,21 +86,64 @@ impl<'a> HuffmanNode<'a> {
     }
 }
 
-
-
-/// Returns a HashTable whose keys are the characters in the original string, and whose values
-/// is the number of times it appears in the string
-/// ex: "abbcccc" -> {'c': 4, 'b': 2, 'a': 1}
-pub fn count_chars(original: &String) -> HashMap<char, i32> {
-    let mut map: HashMap<char, i32> = HashMap::new();
-    for key in original.chars() {
-        let count = map.entry(key).or_insert(0);
-        *count += 1;
-    }
-
-    map
+pub struct HuffmanTree<'a> {
+    nodes: Vec<HuffmanNode<'a>>,
+    min_node_a :HuffmanNode<'a>,
+    min_node_b :HuffmanNode<'a>
 }
 
+impl<'a> HuffmanTree<'a> {
+    fn find_smallest_node (nodes : &Vec<HuffmanNode<'a>>) -> usize{
+        let mut pos:usize = 0;
+        for i in 0..nodes.len() {
+            if nodes[pos].value > nodes[i].value {
+                pos = i;
+            }
+        }
+
+        pos
+    }
+
+    /// Returns a HashTable whose keys are the characters in the original string, and whose values
+    /// is the number of times it appears in the string
+    /// ex: "abbcccc" -> {'c': 4, 'b': 2, 'a': 1}
+    fn count_chars(original: &String) -> HashMap<char, i32> {
+        let mut map: HashMap<char, i32> = HashMap::new();
+        for key in original.chars() {
+            let count = map.entry(key).or_insert(0);
+            *count += 1;
+        }
+
+        map
+    }
+
+    pub fn build(original: &String) -> HuffmanNode<'a> {
+        println!("tree building");
+
+        let hash = HuffmanTree::count_chars(&original);
+        let mut tree = HuffmanTree {
+            nodes : vec![],
+            min_node_a: HuffmanNode::new_leaf('a', 1),
+            min_node_b: HuffmanNode::new_leaf('a', 1),
+        };
+        tree.nodes = hash.into_iter()
+            .map(|t| HuffmanNode::new_leaf(t.0, t.1))
+            .collect::<Vec<HuffmanNode<'a>>>();
+
+        // while tree.nodes.len() > 1 {
+        //     let index_a = HuffmanTree::find_smallest_node(&tree.nodes);
+        //     tree.min_node_a = tree.nodes[index_a];
+        //     tree.nodes.remove(index_a);
+        //     let index_b = HuffmanTree::find_smallest_node(&tree.nodes);
+        //     tree.min_node_b = tree.nodes.remove(index_b);
+        //
+        //     tree.nodes.push(HuffmanNode::new_node(&tree.min_node_a, &tree.min_node_b));
+        // }
+
+        tree.nodes.pop().unwrap() // todo: may crash if given an empty string as input
+    }
+
+}
 
 pub struct HuffmanDictionnary {
     pub table: HashMap<char, Vec<u8>>
@@ -167,7 +210,7 @@ mod tests {
     #[test]
     fn test_count_chars(){
         let s = String::from("abbcccc");
-        let counts = count_chars(&s);
+        let counts = HuffmanTree::count_chars(&s);
 
         assert_eq!(3, counts.keys().len());
         assert_eq!(1, counts[&'a']);
