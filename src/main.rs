@@ -43,17 +43,17 @@ impl<'a> HuffmanNode<'a> {
         return leaf;
     }
 
-    // fn new_node (left:&HuffmanNode, right: &HuffmanNode) {
-    //     let node = HuffmanNode {
-    //         node_type: HuffmanNode::Node,
-    //         key: "",
-    //         value: left.value + right.value,
-    //         left: Some(left),
-    //         right: Some(left)
-    //     };
-    //
-    //     return node;
-    // }
+    fn new_node (left:&'a HuffmanNode, right: &'a HuffmanNode) -> HuffmanNode<'a> {
+        let node = HuffmanNode {
+            node_type: NodeType::Node,
+            key: ' ',
+            value: left.value + right.value,
+            left: Some(left),
+            right: Some(left)
+        };
+
+        return node;
+    }
 }
 
 fn main() {
@@ -69,11 +69,8 @@ fn main() {
     let b = HuffmanNode::new_leaf('b', 2);
     let c = HuffmanNode::new_leaf('c', 4);
 
-    println!("original: {}", &original);
-    println!("{:?}", packer);
-    println!("{:?}", hash);
+    let ab = HuffmanNode::new_node(&a, &b);
+    let root = HuffmanNode::new_node(&ab, &c);
 
-    println!("{:?}", a);
-    println!("{:?}", b);
-    println!("{:?}", c);
+    println!("{:#?}", root);
 }
