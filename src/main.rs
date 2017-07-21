@@ -15,6 +15,47 @@ fn count_chars(original: &String) -> HashMap<char, i32> {
     map
 }
 
+#[derive(Debug)]
+enum NodeType {
+    Node,
+    Leaf
+}
+
+#[derive(Debug)]
+struct HuffmanNode<'a> {
+    node_type: NodeType,
+    key: char,
+    value: i32,
+    left:Option<&'a HuffmanNode<'a>>,
+    right:Option<&'a HuffmanNode<'a >>,
+}
+
+impl<'a> HuffmanNode<'a> {
+    fn new_leaf(key: char, value: i32) -> HuffmanNode<'a> {
+        let leaf = HuffmanNode {
+            node_type: NodeType::Leaf,
+            key: key,
+            value: value,
+            left: None,
+            right: None
+        };
+
+        return leaf;
+    }
+
+    // fn new_node (left:&HuffmanNode, right: &HuffmanNode) {
+    //     let node = HuffmanNode {
+    //         node_type: HuffmanNode::Node,
+    //         key: "",
+    //         value: left.value + right.value,
+    //         left: Some(left),
+    //         right: Some(left)
+    //     };
+    //
+    //     return node;
+    // }
+}
+
 fn main() {
     let original = "abbcccc";
     let mut packer = ruffman::BitPacker::new();
@@ -23,7 +64,16 @@ fn main() {
     packer.pack_bits(&bits);
 
     let hash = count_chars(&String::from(original));
+
+    let a = HuffmanNode::new_leaf('a', 1);
+    let b = HuffmanNode::new_leaf('b', 2);
+    let c = HuffmanNode::new_leaf('c', 4);
+
     println!("original: {}", &original);
     println!("{:?}", packer);
     println!("{:?}", hash);
+
+    println!("{:?}", a);
+    println!("{:?}", b);
+    println!("{:?}", c);
 }
