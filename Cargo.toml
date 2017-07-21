@@ -1,0 +1,6 @@
+[package]
+name = "ruffman"
+version = "0.1.0"
+authors = ["clement <clement@keiruaprod.fr>"]
+
+[dependencies]
