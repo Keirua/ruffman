@@ -1,20 +1,7 @@
 extern crate ruffman;
 
 use std::collections::HashMap;
-use ruffman::HuffmanNode;
-
-/// Returns a HashTable whose keys are the characters in the original string, and whose values
-/// is the number of times it appears in the string
-/// ex: "abbcccc" -> {'c': 4, 'b': 2, 'a': 1}
-fn count_chars(original: &String) -> HashMap<char, i32> {
-    let mut map: HashMap<char, i32> = HashMap::new();
-    for key in original.chars() {
-        let count = map.entry(key).or_insert(0);
-        *count += 1;
-    }
-
-    map
-}
+use ruffman::{HuffmanNode, HuffmanDictionnary};
 
 fn find_smallest_node<'a> (nodes : &Vec<HuffmanNode<'a>>) -> usize{
     let mut pos:usize = 0;
@@ -27,7 +14,7 @@ fn find_smallest_node<'a> (nodes : &Vec<HuffmanNode<'a>>) -> usize{
 }
 
 fn build_tree<'a>(original: &String) -> HuffmanNode<'a> {
-    let hash = count_chars(&original);
+    let hash = ruffman::count_chars(&original);
 
     let mut nodes: Vec<HuffmanNode<'a>> = hash.into_iter()
         .map(|t| HuffmanNode::new_leaf(t.0, t.1))
@@ -45,6 +32,10 @@ fn build_tree<'a>(original: &String) -> HuffmanNode<'a> {
     nodes.pop().unwrap() // todo: may crash if given an empty string as input
 }
 
+
+
+
+
 fn main() {
     let original = String::from("abbcccc");
 
@@ -58,12 +49,16 @@ fn main() {
 
     // let hash = count_chars(&String::from(original));
     //
-    // let a = HuffmanNode::new_leaf('a', 1);
-    // let b = HuffmanNode::new_leaf('b', 2);
-    // let c = HuffmanNode::new_leaf('c', 4);
-    //
-    // let ab = HuffmanNode::new_node(&a, &b);
-    // let root = HuffmanNode::new_node(&ab, &c);
-    //
-    // println!("{:#?}", root);
+    let a = HuffmanNode::new_leaf('a', 1);
+    let b = HuffmanNode::new_leaf('b', 2);
+    let c = HuffmanNode::new_leaf('c', 4);
+
+    let ab = HuffmanNode::new_node(&a, &b);
+    let root = HuffmanNode::new_node(&ab, &c);
+
+    println!("{:#?}", root);
+
+    let mut table = HuffmanDictionnary::new();
+    table.build_table(&root);
+    println!("{:#?}", table.table);
 }
