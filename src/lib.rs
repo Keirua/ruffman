@@ -71,6 +71,7 @@ impl BitPacker {
     }
 }
 
+
 #[derive(Debug)]
 enum NodeType {
     Node,
