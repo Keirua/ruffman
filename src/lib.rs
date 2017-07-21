@@ -117,30 +117,39 @@ impl<'a> HuffmanTree<'a> {
         map
     }
 
-    pub fn build(original: &String) -> HuffmanNode<'a> {
-        println!("tree building");
-
-        let hash = HuffmanTree::count_chars(&original);
-        let mut tree = HuffmanTree {
+    pub fn new () -> HuffmanTree<'a> {
+        HuffmanTree {
             nodes : vec![],
             min_node_a: HuffmanNode::new_leaf('a', 1),
             min_node_b: HuffmanNode::new_leaf('a', 1),
-        };
-        tree.nodes = hash.into_iter()
+        }
+    }
+
+    pub fn build(&mut self, original: &String) -> &HuffmanNode<'a> {
+        println!("tree building");
+
+        let hash = HuffmanTree::count_chars(&original);
+
+        self.nodes = hash.into_iter()
             .map(|t| HuffmanNode::new_leaf(t.0, t.1))
             .collect::<Vec<HuffmanNode<'a>>>();
-
-        // while tree.nodes.len() > 1 {
-        //     let index_a = HuffmanTree::find_smallest_node(&tree.nodes);
-        //     tree.min_node_a = tree.nodes[index_a];
-        //     tree.nodes.remove(index_a);
-        //     let index_b = HuffmanTree::find_smallest_node(&tree.nodes);
-        //     tree.min_node_b = tree.nodes.remove(index_b);
-        //
-        //     tree.nodes.push(HuffmanNode::new_node(&tree.min_node_a, &tree.min_node_b));
+        &self.nodes[0]
+        // let tree : Vec<&HuffmanNode<'a>> = Vec::new();
+        // for i in nodes.iter() {
+        //     tree.push(&i);
         // }
 
-        tree.nodes.pop().unwrap() // todo: may crash if given an empty string as input
+        // while tree.nodes.len() > 1 {
+        //      let index_a = HuffmanTree::find_smallest_node(&tree.nodes);
+        //      let min_node_a = tree.nodes[index_a];
+        //      tree.nodes.remove(index_a);
+        //      let index_b = HuffmanTree::find_smallest_node(&tree.nodes);
+        //      tree.min_node_b = tree.nodes.remove(index_b);
+        //
+        //      tree.nodes.push(HuffmanNode::new_node(&min_node_a, &tree.min_node_b));
+        //  }
+
+        // nodes_clone.pop().unwrap() // todo: may crash if given an empty string as input
     }
 
 }

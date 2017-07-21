@@ -15,8 +15,10 @@ fn compress(s:&String, t:&HuffmanDictionnary) {
 
 fn main() {
     let original = String::from("abbcccc");
-    let tree = HuffmanTree::build(&original);
-    println!("{:#?}", tree);
+    let mut tree = HuffmanTree::new();
+    
+    let root = tree.build(&original);
+    println!("{:#?}", root);
 
     let a = HuffmanNode::new_leaf('a', 1);
     let b = HuffmanNode::new_leaf('b', 2);
