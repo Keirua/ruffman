@@ -34,6 +34,16 @@ impl BitPacker {
             self.pack_bit(*b)
         }
     }
+
+    pub fn debug(&self) {
+        let mut bytes = self.packed_bytes.clone();
+        bytes.push(self.current_byte);
+
+        println!("# Debug");
+        for b in bytes {
+            println!("{:08b} | {:02X} | {:}", b, b, b);
+        }
+    }
 }
 
 #[derive(Debug)]

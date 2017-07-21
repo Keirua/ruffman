@@ -1,7 +1,7 @@
 extern crate ruffman;
 
 use std::collections::HashMap;
-use ruffman::{HuffmanNode, HuffmanDictionnary};
+use ruffman::{HuffmanNode, HuffmanDictionnary, BitPacker};
 
 fn find_smallest_node<'a> (nodes : &Vec<HuffmanNode<'a>>) -> usize{
     let mut pos:usize = 0;
@@ -14,6 +14,7 @@ fn find_smallest_node<'a> (nodes : &Vec<HuffmanNode<'a>>) -> usize{
 }
 
 fn build_tree<'a>(original: &String) -> HuffmanNode<'a> {
+    println!("tree building");
     let hash = ruffman::count_chars(&original);
 
     let mut nodes: Vec<HuffmanNode<'a>> = hash.into_iter()
@@ -32,33 +33,30 @@ fn build_tree<'a>(original: &String) -> HuffmanNode<'a> {
     nodes.pop().unwrap() // todo: may crash if given an empty string as input
 }
 
-
-
+fn compress(s:&String, t:&HuffmanDictionnary) {
+    let mut packer  = BitPacker::new();
+    for c in s.chars() {
+        let ref v = t.table[&c];
+        packer.pack_bits(v);
+        println!("{}, {:?}", c, v);
+    }
+    packer.debug();
+}
 
 
 fn main() {
     let original = String::from("abbcccc");
-
     let tree = build_tree(&original);
-    println!("{:#?}", tree);
 
-    // let mut packer = ruffman::BitPacker::new();
-    //
-    // let bits = vec![1,0,0,0,0,0,0,1,1];
-    // packer.pack_bits(&bits);
-
-    // let hash = count_chars(&String::from(original));
-    //
     let a = HuffmanNode::new_leaf('a', 1);
     let b = HuffmanNode::new_leaf('b', 2);
     let c = HuffmanNode::new_leaf('c', 4);
-
     let ab = HuffmanNode::new_node(&a, &b);
     let root = HuffmanNode::new_node(&ab, &c);
 
-    println!("{:#?}", root);
-
     let mut table = HuffmanDictionnary::new();
     table.build_table(&root);
-    println!("{:#?}", table.table);
+
+    compress(&original, &table);
+    // println!("{:#?}", table.table);
 }
