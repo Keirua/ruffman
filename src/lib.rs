@@ -29,20 +29,45 @@ impl BitPacker {
         }
     }
 
+    pub fn pack_i32(&mut self, v: u32) {
+        for i in 0..32 {
+            self.pack_bit((v & ((1<<i) as u32)) as u8)
+        }
+    }
+
+    pub fn pack_i8(&mut self, v: u8) {
+        for i in 0..8 {
+            self.pack_bit(v & (1<<i) as u8)
+        }
+    }
+
     pub fn pack_bits(&mut self, bits: &Vec<u8>) {
         for b in bits {
             self.pack_bit(*b)
         }
     }
 
+    pub fn flush(&self) -> Vec<u8> {
+        let mut bytes = self.packed_bytes.clone();
+        if self.current_offset > 0 {
+            bytes.push(self.current_byte);
+        }
+
+        return bytes;
+    }
+
     pub fn debug(&self) {
         let mut bytes = self.packed_bytes.clone();
-        bytes.push(self.current_byte);
+        if self.current_offset > 0 {
+            bytes.push(self.current_byte);
+        }
 
         println!("# Debug");
-        for b in bytes {
+        for b in &bytes {
             println!("{:08b} | {:02X} | {:}", b, b, b);
         }
+
+        println!("\t Total length: {}", &bytes.len());
     }
 }
 
@@ -126,7 +151,7 @@ impl<'a> HuffmanTree<'a> {
     }
 
     pub fn build(&mut self, original: &String) -> &HuffmanNode<'a> {
-        println!("tree building");
+        // println!("tree building");
 
         let hash = HuffmanTree::count_chars(&original);
 
@@ -134,6 +159,7 @@ impl<'a> HuffmanTree<'a> {
             .map(|t| HuffmanNode::new_leaf(t.0, t.1))
             .collect::<Vec<HuffmanNode<'a>>>();
         &self.nodes[0]
+
         // let tree : Vec<&HuffmanNode<'a>> = Vec::new();
         // for i in nodes.iter() {
         //     tree.push(&i);
@@ -151,7 +177,6 @@ impl<'a> HuffmanTree<'a> {
 
         // nodes_clone.pop().unwrap() // todo: may crash if given an empty string as input
     }
-
 }
 
 pub struct HuffmanDictionnary {
@@ -167,7 +192,7 @@ impl HuffmanDictionnary {
 
     pub fn build_table (&mut self, root: &HuffmanNode)  {
         let v:Vec<u8> = Vec::new();
-        println!("table building");
+        // println!("table building");
         self.navigate(root, v);
     }
 
