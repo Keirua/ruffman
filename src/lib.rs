@@ -34,6 +34,43 @@ impl BitPacker {
     }
 }
 
+#[derive(Debug)]
+pub enum NodeType {
+    Node,
+    Leaf
+}
+
+#[derive(Debug)]
+pub struct HuffmanNode<'a> {
+    pub node_type: NodeType,
+    pub key: char,
+    pub value: i32,
+    left: Option<&'a HuffmanNode<'a>>,
+    right: Option<&'a HuffmanNode<'a>>,
+}
+
+impl<'a> HuffmanNode<'a> {
+    pub fn new_leaf(key: char, value: i32) -> HuffmanNode<'a> {
+        HuffmanNode {
+            node_type: NodeType::Leaf,
+            key: key,
+            value: value,
+            left: None,
+            right: None,
+        }
+    }
+
+    pub fn new_node(left: &'a HuffmanNode, right: &'a HuffmanNode) -> HuffmanNode<'a> {
+        HuffmanNode {
+            node_type: NodeType::Node,
+            key: ' ',
+            value: left.value + right.value,
+            left: Some(&left),
+            right: Some(&left),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
