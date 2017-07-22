@@ -24,11 +24,14 @@ impl BitUnpacker {
         for _ in 0..n {
             let curr_value = (self.packed_bytes[self.current_byte] & (1 << self.current_offset)) != 0;
             self.current_offset += 1;
+            reads.push(curr_value as u8);
             if self.current_offset > 7 {
                 self.current_byte += 1;
                 self.current_offset = 0;
+                if self.current_byte >= self.packed_bytes.len() {
+                    break;
+                }
             }
-            reads.push(curr_value as u8);
         }
 
         reads
@@ -46,6 +49,10 @@ impl BitUnpacker {
             if current_offset > 7 {
                 current_byte += 1;
                 current_offset = 0;
+                if current_byte >= self.packed_bytes.len() {
+                    break;
+                }
+
             }
             reads.push(curr_value as u8);
         }
@@ -54,7 +61,7 @@ impl BitUnpacker {
     }
 
     fn read_i32(&mut self) -> i32 {
-        let bits = self.read_bits(31);
+        let bits = self.read_bits(32);
         let mut result:i32 = 0;
         for (i, v) in bits.iter().enumerate() {
             result |= (*v as i32) << i;
@@ -110,9 +117,24 @@ fn decompress(compressed: Vec<u8>) {
 
     let message_length = unpacker.read_i32();
 
-
+    let mut message:String = String::from("");
+    let mut best_match:Option<char> = None;
     println!("{:?}", map);
     println!("{}", message_length);
+    println!("{}", message);
+
+    for _ in 0..message_length {
+        for k in map.keys() {
+            let ref curr_bits = map[k];
+            let peeked = unpacker.peek(curr_bits.len() as i32);
+            if peeked.len() == curr_bits.len() && peeked.iter().zip(curr_bits).all(|(a,b)| { a == b}) {
+                message.push(*k);
+                unpacker.read_bits(curr_bits.len() as i32);
+            }
+        }
+    }
+
+    println!("{:?}", message);
 }
 
 fn main() {
@@ -131,10 +153,12 @@ fn main() {
     table.build_table(&tree);
 
     let compressed = compress(&original, &table);
-    // let s = String::from_utf8_lossy(&compressed[..]);
-    // print!("{}", s);
 
+
+    // let decompressed = decompress(compressed);
     decompress(compressed);
+    // let s = String::from_utf8_lossy(&decompressed[..]);
+    // print!("{}", s);
 
     // let mut unpacker = BitUnpacker::new(compressed);
     // let some_bits = unpacker.read_bits(32);
@@ -146,7 +170,6 @@ fn main() {
     //     println!("{},{},{}", result, v, i);
     // }
     // println!("{:?}", some_other_bits);
-
 
     // let mut packer: BitPacker = BitPacker::new();
     // // packer.pack_i32(132)

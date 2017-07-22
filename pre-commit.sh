@@ -6,7 +6,6 @@ nc='\033[0m'
 check="$green$check_char$nc"
 errors=0
 
-
 # echo -n "Checking formatting... "
 # cargo fmt --write-mode=replace
 # fi
