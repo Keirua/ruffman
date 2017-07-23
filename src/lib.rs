@@ -52,7 +52,6 @@ fn count_chars(original: &str) -> HashMap<char, usize> {
     }
 
     map
-
 }
 
 pub fn build_tree(original: &str) -> Box<HuffmanNode> {
@@ -71,18 +70,18 @@ pub fn build_tree(original: &str) -> Box<HuffmanNode> {
     nodes.remove(0)
 }
 
-pub struct HuffmanDictionnary {
-    pub table: HashMap<char, Vec<u8>>
+struct HuffmanDictionnary {
+    table: HashMap<char, Vec<u8>>
 }
 
 impl HuffmanDictionnary {
-    pub fn new () -> HuffmanDictionnary {
+    fn new () -> HuffmanDictionnary {
         HuffmanDictionnary {
             table: HashMap::new()
         }
     }
 
-    pub fn build_table (&mut self, root: &Option<Box<HuffmanNode>>)  {
+    fn build_table (&mut self, root: &Option<Box<HuffmanNode>>)  {
         let v:Vec<u8> = Vec::new();
         // println!("table building");
         self.navigate(&root, v);
@@ -107,7 +106,6 @@ impl HuffmanDictionnary {
             }
             None => {}
         }
-
     }
 }
 
@@ -174,31 +172,6 @@ pub fn decompress(compressed: Vec<u8>) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    //
-    // #[test]
-    // fn test_pack_bit() {
-    //     let mut packer = BitPacker::new();
-    //     packer.pack_bit(1);
-    //     packer.pack_bit(0);
-    //     packer.pack_bit(1);
-    //     packer.pack_bit(1);
-    //
-    //     assert_eq!(0, packer.packed_bytes.len());
-    //     assert_eq!(13, packer.current_byte);
-    //     assert_eq!(4, packer.current_offset);
-    // }
-    //
-    // #[test]
-    // fn test_pack_bits_array() {
-    //     let mut packer = BitPacker::new();
-    //     let bits = vec![1,0,0,0,0,0,0,0,1,1];
-    //     packer.pack_bits(&bits);
-    //
-    //     assert_eq!(1, packer.packed_bytes.len());
-    //     assert_eq!(1, packer.packed_bytes[0]);
-    //     assert_eq!(3, packer.current_byte);
-    //     assert_eq!(2, packer.current_offset);
-    // }
 
     #[test]
     fn test_count_chars(){
@@ -236,7 +209,7 @@ mod tests {
         assert_eq!(&tree.left.unwrap().left.unwrap().key, &Some('a'));
         // assert_eq!(&tree.left.unwrap().right.unwrap().key, &Some('b'));
         // assert_eq!(&tree.right.unwrap().key, &Some('c'));
-        // ^ wtf ? How are you supposed to do that ?
+        // ^ wtf ? How are you supposed to do that since variables are already used ?
     }
 
     #[test]
