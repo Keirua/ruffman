@@ -1,8 +1,6 @@
 [package]
-name = "ruffman"
+name = "bitpacker"
 version = "0.1.0"
 authors = ["clement <clement@keiruaprod.fr>"]
-[workspace]
 
 [dependencies]
-bitpacker = { path = "bitpacker" }
