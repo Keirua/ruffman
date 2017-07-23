@@ -1,4 +1,11 @@
 [root]
 name = "ruffman"
 version = "0.1.0"
+dependencies = [
+ "bitpacker 0.1.0",
+]
+
+[[package]]
+name = "bitpacker"
+version = "0.1.0"
 
