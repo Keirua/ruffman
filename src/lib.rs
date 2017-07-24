@@ -83,15 +83,15 @@ impl HuffmanDictionnary {
 
     fn build_table (&mut self, root: &Option<Box<HuffmanNode>>)  {
         let v:Vec<u8> = Vec::new();
-        // println!("table building");
         self.navigate(&root, v);
+
+        println!("Built table:\n{:#?}", self.table);
     }
 
     fn navigate (&mut self, node_option: &Option<Box<HuffmanNode>>, v:Vec<u8>) {
         match *node_option {
             Some(ref node) => {
                 if node.is_leaf() {
-                    //println!("reached {} {}, {:?}", node.key, node.value, v);
                     self.table.entry(node.key.unwrap()).or_insert(v);
                 }
                 else {
@@ -101,7 +101,6 @@ impl HuffmanDictionnary {
                     vr.push(1);
                     self.navigate(&node.left, vl);
                     self.navigate(&node.right, vr);
-                    // self.navigate(&node.right.unwrap(), vr);
                 }
             }
             None => {}
@@ -111,7 +110,6 @@ impl HuffmanDictionnary {
 
 pub fn compress(original:&String) -> Vec<u8> {
     let root = build_tree(&original);
-    // println!("{:#?}", root);
 
     let mut table = HuffmanDictionnary::new();
     table.build_table(&Some(root));
@@ -131,9 +129,8 @@ pub fn compress(original:&String) -> Vec<u8> {
     for c in original.chars() {
         let ref v = table.table[&c];
         packer.pack_bits(v);
-        // println!("{}, {:?}", c, v);
     }
-    // packer.debug();
+    packer.debug();
     packer.flush()
 }
 
@@ -151,17 +148,18 @@ pub fn decompress(compressed: Vec<u8>) -> String {
     let message_length = unpacker.read_i32();
 
     let mut message:String = String::from("");
-    // println!("{:?}", map);
-    // println!("{}", message_length);
-    // println!("{}", message);
+    println!("Decompressed table:\n {:#?}", map);
+    println!("Uncompressed message length: {}", message_length);
 
     for _ in 0..message_length {
         for k in map.keys() {
             let ref curr_bits = map[k];
             let peeked = unpacker.peek(curr_bits.len() as i32);
             if peeked.len() == curr_bits.len() && peeked.iter().zip(curr_bits).all(|(a,b)| { a == b}) {
+                // println!("{}", *k);
                 message.push(*k);
                 unpacker.read_bits(curr_bits.len() as i32);
+                break;
             }
         }
     }
@@ -214,6 +212,9 @@ mod tests {
 
     #[test]
     fn test_compress_decompress (){
-        assert_eq!("abbcccc", decompress(compress(&String::from("abbcccc"))));
+        let abbcccc = String::from("abbcccc");
+        let plop = String::from("plop");
+        assert_eq!(abbcccc, decompress(compress(&abbcccc)));
+        assert_eq!(plop, decompress(compress(&plop)));
     }
 }

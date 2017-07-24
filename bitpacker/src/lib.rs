@@ -113,6 +113,7 @@ impl BitUnpacker {
 
         for _ in 0..n {
             let curr_value = (self.packed_bytes[current_byte] & (1 << current_offset)) != 0;
+            reads.push(curr_value as u8);
             current_offset += 1;
             if current_offset > 7 {
                 current_byte += 1;
@@ -120,9 +121,7 @@ impl BitUnpacker {
                 if current_byte >= self.packed_bytes.len() {
                     break;
                 }
-
             }
-            reads.push(curr_value as u8);
         }
 
         reads

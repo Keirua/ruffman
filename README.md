@@ -4,10 +4,7 @@ Implementation of the [Huffman coding](https://en.wikipedia.org/wiki/Huffman_cod
 
 ## todo
 
-Make it work :) Compression seems to work as expected, but the compressed text is not
-
- - Improve code coverage. It's quite scary right now.
- - Debug the decompress function, which does not behave as expected
+ - Improve code coverage, it's way too low right now.
  - Provide a command line interface with [clap](https://clap.rs/) or similar
  - Cleanup the code (dirty commented out prints, useless HuffmanTable struct, etc)
 
