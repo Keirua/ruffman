@@ -204,10 +204,9 @@ mod tests {
     fn test_building_tree (){
         let tree = build_tree("abbcccc");
 
-        assert_eq!(&tree.left.unwrap().left.unwrap().key, &Some('a'));
-        // assert_eq!(&tree.left.unwrap().right.unwrap().key, &Some('b'));
-        // assert_eq!(&tree.right.unwrap().key, &Some('c'));
-        // ^ wtf ? How are you supposed to do that since variables are already used ?
+        assert_eq!(&tree.left.as_ref().unwrap().left.as_ref().unwrap().key, &Some('a'));
+        assert_eq!(&tree.left.as_ref().unwrap().right.as_ref().unwrap().key, &Some('b'));
+        assert_eq!(&tree.right.as_ref().unwrap().key, &Some('c'));
     }
 
     #[test]

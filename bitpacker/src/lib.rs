@@ -30,7 +30,7 @@ impl BitPacker {
 
     pub fn pack_i32(&mut self, v: u32) {
         for i in 0..32 {
-            self.pack_bit((v & ((1<<i) as u32)) as u8)
+            self.pack_bit(((v & ((1<<i) as u32)) > 0) as u8)
         }
     }
 
@@ -175,5 +175,16 @@ mod tests {
         assert_eq!(1, packer.packed_bytes[0]);
         assert_eq!(3, packer.current_byte);
         assert_eq!(2, packer.current_offset);
+    }
+
+    #[test]
+    fn test_pack_i32() {
+        let mut packer = BitPacker::new();
+        packer.pack_i32(620);
+        let expected = vec![108,2,0,0];
+
+        let packed = packer.flush();
+
+        assert_eq!(packed, expected);
     }
 }
